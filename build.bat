@@ -1,1 +1,1 @@
-cd build && cmake --build ..\bin --target clean && cd ..
+cd build && cmake --build . && cd ..
