@@ -1,1 +1,3 @@
-cd build && cmake . && cd ..
+cd build
+cmake ..\
+cd ..
