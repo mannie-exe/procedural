@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.11) # FetchContent is available in 3.11+
+cmake_minimum_required(VERSION 3.11)
 project(procedural VERSION 0.1)
 
 find_package(raylib 3.0 QUIET)
@@ -20,10 +20,9 @@ if (NOT raylib_FOUND)
     add_subdirectory(${raylib_SOURCE_DIR} ${raylib_BINARY_DIR})
   endif()
 endif()
-#set(raylib_VERBOSE 1)
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
-add_executable(${PROJECT_NAME} ../main.c)
+add_executable(${PROJECT_NAME} ./src/main.c)
 target_link_libraries(${PROJECT_NAME} raylib)

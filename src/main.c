@@ -29,19 +29,19 @@ int main(void)
         // BeginMode3D(camera);
         // DrawGrid(10, 1.0f);
         // EndMode3D();
-        // for (int idxA = 0; idxA < world.xSize; idxA++)
-        // {
-        //     for (int idxB = 0; idxB < world.xSize; idxB++)
-        //     {
-        //         const int currIdx = (idxA + 1) * (idxB + 1) - 1;
-        //         const float currPerlinValue = world.data[currIdx];
-        //         printf("%d", currPerlinValue);
-        //         // DrawPixel(idxA, idxB, (Color){0, 0, 0, (int)currPerlinValue * 255});
-        //     }
-        // }
+        for (int idxA = 0; idxA < world.xSize; idxA++)
+        {
+            for (int idxB = 0; idxB < world.xSize; idxB++)
+            {
+                const int currIdx = (idxA + 1) * (idxB + 1) - 1;
+                const float currPerlinValue = world.data[currIdx];
+                DrawPixel(idxA, idxB, (Color){0, 0, 0, (int)(currPerlinValue * 255)});
+            }
+        }
         EndDrawing();
     }
 
     CloseWindow();
+    free(world.data);
     return 0;
 }

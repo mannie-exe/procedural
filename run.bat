@@ -1,1 +1,0 @@
-.\build\Debug\procedural.exe
