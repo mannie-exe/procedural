@@ -1,15 +1,13 @@
 #include <stdio.h>
 #include <raylib.h>
-#include "world/world.h"
+#include "window/main.h"
+#include "world/main.h"
 
 int main(void)
 {
-    struct World world = generateWorld(200, 200);
+    struct World world = generateWorld(500, 500, 0);
 
-    const int screenWidth = 200;
-    const int screenHeight = 200;
-    InitWindow(screenWidth, screenHeight, "procedural - zer0cell");
-    SetTargetFPS(60);
+    CreateWindow("procedural - zer0cell", 1.0F);
 
     // Camera3D camera = {0};
     // camera.position = (Vector3){5.0f, 2.0f, 5.0f};
@@ -21,24 +19,35 @@ int main(void)
 
     while (!WindowShouldClose())
     {
+        // TODO: Implement fullscreen toggling
+        // May need to read about window configuration options
+        // Make it borderless fullscreen by default.
+        // if (IsKeyReleased(KEY_ENTER) || IsKeyReleased(KEY_KP_ENTER))
+        // {
+        //     ToggleFullscreen();
+        // }
+
         // float delta = GetFrameTime();
         // UpdateCamera(&camera);
 
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        // BeginMode3D(camera);
-        // DrawGrid(10, 1.0f);
-        // EndMode3D();
+
+        const int centerOffsetX = (GetScreenWidth() - world.xSize) / 2;
+        const int centerOffsetY = (GetScreenHeight() - world.ySize) / 2;
+
         for (int idxA = 0; idxA < world.xSize; idxA++)
         {
             for (int idxB = 0; idxB < world.xSize; idxB++)
             {
                 const int currIdx = (idxA + 1) * (idxB + 1) - 1;
                 const float currPerlinValue = world.data[currIdx];
-                DrawPixel(idxA, idxB, (Color){0, 0, 0, (int)(currPerlinValue * 255)});
+                DrawPixel(idxA + centerOffsetX, idxB + centerOffsetY, (Color){0, 0, 0, (int)(currPerlinValue * 255)});
             }
         }
+
         EndDrawing();
+        regenWorld(&world, world.seed + 4);
     }
 
     CloseWindow();
