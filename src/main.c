@@ -3,19 +3,15 @@
 #include "window/main.h"
 #include "world/main.h"
 
+struct Rectangle getScaledCanvasRect(struct Rectangle canvasSrc, struct Rectangle windowSize);
+
 int main(void)
 {
     struct World world = generateWorld(500, 500, 0);
 
-    CreateWindow("procedural - zer0cell", 1.0F);
-
-    // Camera3D camera = {0};
-    // camera.position = (Vector3){5.0f, 2.0f, 5.0f};
-    // camera.target = (Vector3){0.0f, 1.8f, 0.0f};
-    // camera.up = (Vector3){0.0f, 1.0f, 0.0f};
-    // camera.fovy = 45.0f;
-    // camera.type = CAMERA_PERSPECTIVE;
-    // SetCameraMode(camera, CAMERA_FIRST_PERSON);
+    SetConfigFlags(FLAG_MSAA_4X_HINT);
+    struct Rectangle windowSize = CreateWindow("procedural - zer0cell");
+    RenderTexture2D canvas = LoadRenderTexture(world.xSize, world.ySize);
 
     while (!WindowShouldClose())
     {
@@ -27,14 +23,10 @@ int main(void)
         //     ToggleFullscreen();
         // }
 
-        // float delta = GetFrameTime();
-        // UpdateCamera(&camera);
+        float delta = GetFrameTime();
 
-        BeginDrawing();
+        BeginTextureMode(canvas);
         ClearBackground(RAYWHITE);
-
-        const int centerOffsetX = (GetScreenWidth() - world.xSize) / 2;
-        const int centerOffsetY = (GetScreenHeight() - world.ySize) / 2;
 
         for (int idxA = 0; idxA < world.xSize; idxA++)
         {
@@ -42,15 +34,47 @@ int main(void)
             {
                 const int currIdx = (idxA + 1) * (idxB + 1) - 1;
                 const float currPerlinValue = world.data[currIdx];
-                DrawPixel(idxA + centerOffsetX, idxB + centerOffsetY, (Color){0, 0, 0, (int)(currPerlinValue * 255)});
+                const int flippedY = world.ySize - (idxB + 1); // Used because texture buffers are added to from the other direction.
+                DrawPixel(idxA, flippedY, (Color){0, 0, 0, (int)(currPerlinValue * 255)});
             }
         }
 
+        EndTextureMode();
+
+        BeginDrawing();
+        ClearBackground(RAYWHITE);
+
+        const struct Rectangle canvasSrc = (Rectangle){.width = canvas.texture.width, .height = canvas.texture.height};
+        const struct Rectangle canvasDest = getScaledCanvasRect(canvasSrc, windowSize);
+
+        DrawTexturePro(canvas.texture, canvasSrc, canvasDest, (Vector2){0, 0}, 0.0F, RAYWHITE);
+
         EndDrawing();
-        regenWorld(&world, world.seed + 4);
+
+        RegenWorld(&world, world.seed + (int)(delta * 8));
     }
 
     CloseWindow();
     free(world.data);
     return 0;
+}
+
+struct Rectangle getScaledCanvasRect(struct Rectangle canvasSrc, struct Rectangle windowSize)
+{
+    float length, x, y;
+
+    if (windowSize.height > windowSize.width)
+    {
+        length = windowSize.width;
+        y = (windowSize.height - length) / 2;
+        x = 0.0F;
+    }
+    else
+    {
+        length = windowSize.height;
+        x = (windowSize.width - length) / 2;
+        y = 0.0F;
+    }
+
+    return (Rectangle){.x = x, .y = y, .width = length, .height = length};
 }

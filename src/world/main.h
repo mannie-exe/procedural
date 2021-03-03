@@ -3,4 +3,4 @@
 
 struct World;
 struct World generateWorld(int xSize, int ySize);
-void regenWorld(struct World *world, int seed);
+void RegenWorld(struct World *world, int seed);
