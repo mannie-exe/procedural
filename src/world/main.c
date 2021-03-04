@@ -6,7 +6,7 @@
 struct World
 {
     double *data;
-    int seed;
+    int64_t seed;
     int xSize;
     int ySize;
 };
@@ -27,7 +27,7 @@ void *FillNoisePattern(struct World *world)
     free(osnGenerator);
 }
 
-struct World generateWorld(int xSize, int ySize, int initialSeed)
+struct World generateWorld(int xSize, int ySize, int64_t initialSeed)
 {
     const int worldSize = xSize * ySize;
     const int worldDataSize = sizeof(double) * worldSize;
@@ -44,7 +44,7 @@ struct World generateWorld(int xSize, int ySize, int initialSeed)
     return world;
 }
 
-void RegenWorld(struct World *world, int newSeed)
+void RegenWorld(struct World *world, int64_t newSeed)
 {
     world->seed = newSeed;
     FillNoisePattern(world);

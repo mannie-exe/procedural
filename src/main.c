@@ -3,11 +3,10 @@
 #include "window/main.h"
 #include "world/main.h"
 
-struct Rectangle getScaledCanvasRect(struct Rectangle canvasSrc, struct Rectangle windowSize);
-
 int main(void)
 {
-    struct World world = generateWorld(500, 500, 0);
+    SetTraceLogLevel(LOG_DEBUG);
+    struct World world = generateWorld(500, 500, (int64_t)0);
 
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     struct Rectangle windowSize = CreateWindow("procedural - zer0cell");
@@ -49,31 +48,12 @@ int main(void)
 
         DrawTexturePro(canvas.texture, canvasSrc, canvasDest, (Vector2){0, 0}, 0.0F, RAYWHITE);
 
-        RegenWorld(&world, (int)(world.seed + delta * 8));
+        RegenWorld(&world, (int64_t)(world.seed + delta * 60));
+
         EndDrawing();
     }
 
     CloseWindow();
     DeleteWorld(&world);
     return 0;
-}
-
-struct Rectangle getScaledCanvasRect(struct Rectangle canvasSrc, struct Rectangle windowSize)
-{
-    float length, x, y;
-
-    if (windowSize.height > windowSize.width)
-    {
-        length = windowSize.width;
-        y = (windowSize.height - length) / 2;
-        x = 0.0F;
-    }
-    else
-    {
-        length = windowSize.height;
-        x = (windowSize.width - length) / 2;
-        y = 0.0F;
-    }
-
-    return (Rectangle){.x = x, .y = y, .width = length, .height = length};
 }

@@ -3,8 +3,8 @@
 
 void AdjustWindowPosition(struct Rectangle *windowDimensions, struct Rectangle monitorSize)
 {
-    windowDimensions->x = (int)(monitorSize.width - windowDimensions->width) / 2;
-    windowDimensions->y = (int)(monitorSize.height - windowDimensions->height) / 2;
+    windowDimensions->x = (monitorSize.width - windowDimensions->width) / 2;
+    windowDimensions->y = (monitorSize.height - windowDimensions->height) / 2;
 }
 
 struct Rectangle CreateWindow(char *title)
@@ -20,12 +20,33 @@ struct Rectangle CreateWindow(char *title)
     const int targetWidth = (int)(maxWidth * windowScaleFactor);
     const int targetHeight = (int)(maxHeight * windowScaleFactor);
     SetWindowSize(targetWidth, targetHeight);
+    SetTargetFPS(60);
     printf("Scaled window: %dx%d <- %dx%d @ %d (target <- max @ fps)\n", targetWidth, targetHeight, maxWidth, maxHeight, fps);
 
-    struct Rectangle windowDimensions = (struct Rectangle){.width = targetWidth, .height = targetHeight};
-    AdjustWindowPosition(&windowDimensions, (struct Rectangle){.width = maxWidth, .height = maxHeight});
+    struct Rectangle windowDimensions = (struct Rectangle){.width = (float)targetWidth, .height = (float)targetHeight};
+    AdjustWindowPosition(&windowDimensions, (struct Rectangle){.width = (float)maxWidth, .height = (float)maxHeight});
     SetWindowPosition(windowDimensions.x, windowDimensions.y);
-    printf("Set window position to: %d,%d\n", windowDimensions.x, windowDimensions.y);
+    printf("Set window position to: %d,%d\n", (int)windowDimensions.x, (int)windowDimensions.y);
 
     return windowDimensions;
+}
+
+struct Rectangle getScaledCanvasRect(struct Rectangle canvasSrc, struct Rectangle windowSize)
+{
+    float length, x, y;
+
+    if (windowSize.height > windowSize.width)
+    {
+        length = windowSize.width;
+        y = (windowSize.height - length) / 2;
+        x = 0.0F;
+    }
+    else
+    {
+        length = windowSize.height;
+        x = (windowSize.width - length) / 2;
+        y = 0.0F;
+    }
+
+    return (Rectangle){.x = x, .y = y, .width = length, .height = length};
 }
