@@ -33,9 +33,9 @@ int main(void)
             for (int idxB = 0; idxB < world.xSize; idxB++)
             {
                 const int currIdx = (idxA + 1) * (idxB + 1) - 1;
-                const float currPerlinValue = world.data[currIdx];
+                const double currValue = world.data[currIdx];
                 const int flippedY = world.ySize - (idxB + 1); // Used because texture buffers are added to from the other direction.
-                DrawPixel(idxA, flippedY, (Color){0, 0, 0, (int)(currPerlinValue * 255)});
+                DrawPixel(idxA, flippedY, (Color){0, 0, 0, (int)(currValue * 255)});
             }
         }
 
@@ -49,13 +49,12 @@ int main(void)
 
         DrawTexturePro(canvas.texture, canvasSrc, canvasDest, (Vector2){0, 0}, 0.0F, RAYWHITE);
 
+        RegenWorld(&world, (int)(world.seed + delta * 8));
         EndDrawing();
-
-        RegenWorld(&world, world.seed + (int)(delta * 8));
     }
 
     CloseWindow();
-    free(world.data);
+    DeleteWorld(&world);
     return 0;
 }
 

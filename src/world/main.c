@@ -1,48 +1,57 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <raylib.h>
-#include "utils/perlin/main.h"
+#include "utils/opensimplex/main.h"
 
 struct World
 {
-    float *data;
+    double *data;
     int seed;
     int xSize;
     int ySize;
 };
 
-float *fillPerlinWorld(float *world, int xSize, int ySize, int seed)
+void *FillNoisePattern(struct World *world)
 {
-    for (int idxA = 0; idxA < xSize; idxA++)
+    const struct osn_context *osnGenerator;
+    open_simplex_noise((int64_t)(world->seed), &osnGenerator);
+    for (int idxA = 0; idxA < world->xSize; idxA++)
     {
-        for (int idxB = 0; idxB < ySize; idxB++)
+        for (int idxB = 0; idxB < world->ySize; idxB++)
         {
             const int currIdx = (idxA + 1) * (idxB + 1) - 1;
-            const float currPerlinValue = perlin2d((float)(idxA + seed), (float)(idxB + seed), 0.33F, 10);
-            world[currIdx] = currPerlinValue;
+            const double currValue = open_simplex_noise2(osnGenerator, (double)idxA, (double)idxB);
+            world->data[currIdx] = currValue;
         }
     }
+    free(osnGenerator);
 }
 
-struct World generateWorld(int xSize, int ySize, int seed)
+struct World generateWorld(int xSize, int ySize, int initialSeed)
 {
     const int worldSize = xSize * ySize;
-    const int worldDataSize = sizeof(float) * worldSize;
-    float *perlinWorld = (float *)malloc(worldDataSize);
+    const int worldDataSize = sizeof(double) * worldSize;
+    double *noisePattern = (double *)malloc(worldDataSize);
 
-    if (!perlinWorld)
+    if (!noisePattern)
     {
         perror("Could not build world; no memory or invalid size");
         abort();
     }
 
-    fillPerlinWorld(perlinWorld, xSize, ySize, seed);
-
-    return (struct World){.data = perlinWorld, .seed = seed, .xSize = xSize, .ySize = ySize};
+    struct World world = (struct World){.data = noisePattern, .seed = initialSeed, .xSize = xSize, .ySize = ySize};
+    FillNoisePattern(&world);
+    return world;
 }
 
-void RegenWorld(struct World *world, int seed)
+void RegenWorld(struct World *world, int newSeed)
 {
-    fillPerlinWorld((*world).data, (*world).xSize, (*world).ySize, (*world).seed);
-    (*world).seed = seed;
+    world->seed = newSeed;
+    FillNoisePattern(world);
+}
+
+void DeleteWorld(struct World *world)
+{
+    free(world->data);
+    world = NULL;
 }

@@ -3,8 +3,8 @@
 
 void AdjustWindowPosition(struct Rectangle *windowDimensions, struct Rectangle monitorSize)
 {
-    (*windowDimensions).x = (int)(monitorSize.width - (*windowDimensions).width) / 2;
-    (*windowDimensions).y = (int)(monitorSize.height - (*windowDimensions).height) / 2;
+    windowDimensions->x = (int)(monitorSize.width - windowDimensions->width) / 2;
+    windowDimensions->y = (int)(monitorSize.height - windowDimensions->height) / 2;
 }
 
 struct Rectangle CreateWindow(char *title)
