@@ -6,7 +6,7 @@
 int main(void)
 {
     SetTraceLogLevel(LOG_DEBUG);
-    struct World world = generateWorld(500, 500, (int64_t)0);
+    struct World world = generateWorld(500, 500, 0);
 
     SetConfigFlags(FLAG_MSAA_4X_HINT);
     struct Rectangle windowSize = CreateWindow("procedural - zer0cell");
@@ -43,12 +43,12 @@ int main(void)
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        const struct Rectangle canvasSrc = (Rectangle){.width = canvas.texture.width, .height = canvas.texture.height};
+        const struct Rectangle canvasSrc = (Rectangle){.width = (float)canvas.texture.width, .height = (float)canvas.texture.height};
         const struct Rectangle canvasDest = getScaledCanvasRect(canvasSrc, windowSize);
 
         DrawTexturePro(canvas.texture, canvasSrc, canvasDest, (Vector2){0, 0}, 0.0F, RAYWHITE);
 
-        RegenWorld(&world, (int64_t)(world.seed + delta * 60));
+        RegenWorld(&world, (int)(world.seed + delta * 60));
 
         EndDrawing();
     }

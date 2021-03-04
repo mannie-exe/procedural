@@ -25,7 +25,7 @@ struct Rectangle CreateWindow(char *title)
 
     struct Rectangle windowDimensions = (struct Rectangle){.width = (float)targetWidth, .height = (float)targetHeight};
     AdjustWindowPosition(&windowDimensions, (struct Rectangle){.width = (float)maxWidth, .height = (float)maxHeight});
-    SetWindowPosition(windowDimensions.x, windowDimensions.y);
+    SetWindowPosition((int)windowDimensions.x, (int)windowDimensions.y);
     printf("Set window position to: %d,%d\n", (int)windowDimensions.x, (int)windowDimensions.y);
 
     return windowDimensions;

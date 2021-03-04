@@ -14,7 +14,7 @@ struct World
 void *FillNoisePattern(struct World *world)
 {
     const struct osn_context *osnGenerator;
-    open_simplex_noise((int64_t)(world->seed), &osnGenerator);
+    open_simplex_noise(world->seed, &osnGenerator);
     for (int idxA = 0; idxA < world->xSize; idxA++)
     {
         for (int idxB = 0; idxB < world->ySize; idxB++)
@@ -27,7 +27,7 @@ void *FillNoisePattern(struct World *world)
     free(osnGenerator);
 }
 
-struct World generateWorld(int xSize, int ySize, int64_t initialSeed)
+struct World generateWorld(int xSize, int ySize, int initialSeed)
 {
     const int worldSize = xSize * ySize;
     const int worldDataSize = sizeof(double) * worldSize;
@@ -39,14 +39,15 @@ struct World generateWorld(int xSize, int ySize, int64_t initialSeed)
         abort();
     }
 
-    struct World world = (struct World){.data = noisePattern, .seed = initialSeed, .xSize = xSize, .ySize = ySize};
+    const int64_t worldSeed = (int64_t)initialSeed;
+    struct World world = (struct World){.data = noisePattern, .seed = worldSeed, .xSize = xSize, .ySize = ySize};
     FillNoisePattern(&world);
     return world;
 }
 
-void RegenWorld(struct World *world, int64_t newSeed)
+void RegenWorld(struct World *world, int newSeed)
 {
-    world->seed = newSeed;
+    world->seed = (int64_t)newSeed;
     FillNoisePattern(world);
 }
 
